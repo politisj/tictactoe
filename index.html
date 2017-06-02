@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/Board.js"></script>
+    <script type="text/javascript" src="js/AIBoard.js"></script>
+    <script type="text/javascript" src="js/ScoreBoard.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+
+    <header>
+        <h1>TIC TAC TOE</h1>
+        <div id="next-players-turn">Next Players Turn : O</div>
+
+        <div class="Score-Board">
+            <h3> Score Board </h3>
+            <div id="score-playerO" class="players-scores">Player O</div>
+            <div id="score-playerX" class="players-scores">Player X</div>
+        </div>
+
+        <select id="playerSelection">
+            <option value="0" selected="selected">Multi Player</option>
+            <option value="1">Single Player</option>
+        </select>
+
+        <select>
+            <option value="" disabled="disabled" selected="selected">Please select a Level</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+
+        <div class="gameOver-panel">
+            <div id="winner"></div>
+            <div id="gameOver"></div>
+        </div>
+
+        <div id="game-options" class="game-options">
+            <button id="btnReset" class="play-buttons" name="button">Play Again</button>
+            <button id="btnSaveScore" class="play-buttons" name="button">Save</button>
+        </div>
+
+
+    </header>
+
+    <div id="tic-tac-toe" class="tic-tac-toe">
+        <div id="row1" class="row">
+            <div id="col1" class="cell" col="0" row="0"></div>
+            <div id="col2" class="cell" col="1" row="0"></div>
+            <div id="col3" class="cell" col="2" row="0"></div>
+        </div>
+        <div id="row2" class="row">
+            <div id="col1" class="cell" col="0" row="1"></div>
+            <div id="col2" class="cell" col="1" row="1"></div>
+            <div id="col3" class="cell" col="2" row="1"></div>
+        </div>
+        <div id="row3" class="row">
+            <div id="col1" class="cell" col="0" row="2"></div>
+            <div id="col2" class="cell" col="1" row="2"></div>
+            <div id="col3" class="cell" col="2" row="2"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>
