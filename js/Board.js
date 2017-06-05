@@ -7,8 +7,7 @@ function Board(){
 
     var _winnerCB;                 //usr Callback handler
     var _InvalidMoveCB;            //usr Callback handler win an invalid move has been detected
-    var _cbGameOver;
-    var _limitReachedCount = 0;    //keep a count of the number of plays,
+    var _cbGameOver;               //usr Callback handler
 
     var _matrix =[ ['F','F','F'],
                    ['F','F','F'],
@@ -18,7 +17,7 @@ function Board(){
     /**
       * Author: John Politis
       * Date :   01/06/2017
-      * Description : Cycles through the matrix and builds an array of free slot objects
+      * Description : Cycles through the matrix and build an array of free slot objects
       */
     this.getFreeSlots = function() {
         var freeSlots = [];
@@ -45,7 +44,15 @@ function Board(){
       * Description : returns true if there is available slots on the board
       */
     this.isBoardFilled = function() {
-        return _limitReachedCount === 8 ?  true : false;
+
+        for (var i = 0; i < _matrix.length; i++) {
+            for (var j = 0; j < _matrix[i].length; j++) {
+                if (_matrix[i][j] === 'F' )  return false;
+            }
+        }
+
+        return true;
+
     }
      /**
        * Author: John Politis
@@ -62,12 +69,13 @@ function Board(){
        */
     function checkWiningDiagonalMove(p) {
         //0,4,8  2,4,6
+        var ret = false;
         var d1 = _matrix[0][0] + _matrix[1][1] + _matrix[2][2];
         var d2 = _matrix[0][2] + _matrix[1][1] + _matrix[2][0];
 
-        if (d1 === p.repeat(3) || d2 === p.repeat(3)) return true
+        if ( d1 === p.repeat(3) || d2 === p.repeat(3) )  ret = true;
 
-        return false;
+        return ret;
     }
     /**
       * Author: John Politis
@@ -76,13 +84,14 @@ function Board(){
       */
     function checkWiningColumnMove(p) {
         //0,3,6   1,4,7   2,5,8
+        var ret = false;
         var c1 = _matrix[0][0] + _matrix[1][0] + _matrix[2][0];
         var c2 = _matrix[0][1] + _matrix[1][1] + _matrix[2][1];
         var c3 = _matrix[0][2] + _matrix[1][2] + _matrix[2][2];
 
-        if (c1 === p.repeat(3) || c2 === p.repeat(3) || c3 === p.repeat(3) ) return true;
+        if (c1 === p.repeat(3) || c2 === p.repeat(3) || c3 === p.repeat(3) ) ret = true;
 
-        return false;
+        return ret;
     }
     /**
       * Author: John Politis
@@ -91,13 +100,14 @@ function Board(){
       */
     function checkWiningRowMove(p) {
         //0,1,2  3,4,5  6,7,8
+        var ret = false;
         var r1 = _matrix[0][0] + _matrix[0][1] + _matrix[0][2];
         var r2 = _matrix[1][0] + _matrix[1][1] + _matrix[1][2];
         var r3 = _matrix[2][0] + _matrix[2][1] + _matrix[2][2];
 
-        if (r1 === p.repeat(3) || r2 === p.repeat(3) || r3 === p.repeat(3) ) return true;
+        if (r1 === p.repeat(3) || r2 === p.repeat(3) || r3 === p.repeat(3) ) ret = true;
 
-        return false;
+        return ret;
     }
 
     /**
@@ -105,12 +115,13 @@ function Board(){
       * Date :   29/05/2017
       * Description : Check for all posible winning moves
       */
-    function checkForWinningMove(p) {
+    this.checkForWinningMove = function (p) {
 
-        return checkWiningDiagonalMove(p)  ? true
-               : checkWiningColumnMove(p)  ? true
-               : checkWiningRowMove(p)     ? true
-               : false;
+        if ( checkWiningDiagonalMove(p) === true )  return  true;
+        if ( checkWiningColumnMove(p)   === true )  return  true;
+        if (  checkWiningRowMove(p)     === true )  return  true;
+
+        return false;
     }
     /**
       * Author: John Politis
@@ -127,7 +138,6 @@ function Board(){
         _matrix[2][0] = 'F';
         _matrix[2][1] = 'F';
         _matrix[2][2] = 'F';
-        _limitReachedCount = 0;
     }
     /**
       * Author: John Politis
@@ -144,25 +154,23 @@ function Board(){
       */
     this.playerMove = function(player,row,col,cb) {
 
-        /* check if we have hit our max plays as by now the */
-        /* entire grid will be filled up. therefore there is no more room on the board */
-        if (_limitReachedCount >= 9 ) {
-            this.dump();    //TODO
-            if ( _cbGameOver !== undefined) _cbGameOver();
+        if ( this.isBoardFilled() ) {
+            // if ( _cbGameOver !== undefined) _cbGameOver();
             return;
         }
-
-        if( isCellAvailable(row,col) ) {
+        if( !isCellAvailable(row,col) ) {
             if ( _InvalidMoveCB !== undefined)  _InvalidMoveCB(player);
+            return false;
         }
 
         _matrix[row][col] = player;
-        _limitReachedCount++;
 
-        if (checkForWinningMove(player)) {
-            this.dump();        //TODO
+        if (this.checkForWinningMove(player)) {
             if (_winnerCB !== undefined)   _winnerCB(player);
+            return false;
         }
+
+        return true;
     }
     /**
       * Author: John Politis
@@ -184,5 +192,46 @@ function Board(){
             _cbGameOver = cb;
         }
     }
+    /**
+      * Author: John Politis
+      * Date :   03/06/2017
+      * Description :
+      */
+    this.poke = function (row,col,val) {
+        _matrix[row][col] = val;
+    }
+    /**
+      * Author: John Politis
+      * Date :   03/06/2017
+      * Description : sets the internal matrix data structure
+      */
+    this.setMatrix = function (m) {
+        _matrix = m;
+    }
+    /**
+      * Author: John Politis
+      * Date :   03/06/2017
+      * Description : return the internal matrix data structure
+      */
+    this.getMatrix = function() {
+        return _matrix;
+    }
+    /**
+      * Author: John Politis
+      * Date :   03/06/2017
+      * Description : provide a copy method that will copy the existng object
+      */
+    this.copy = function() {
+        var clone = new Board();
+        var nMatrix = [[],[],[]];
 
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                nMatrix[i][j] = _matrix[i][j];
+            }
+        }
+        clone.setMatrix(nMatrix);
+        return clone;
+
+    }
 }

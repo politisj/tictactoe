@@ -211,7 +211,7 @@ app.controller = {
         /**
           * Author: John Politis
           * Date :   29/05/2017
-          * Description :  Register the invalidMove event and pass it to our view for rendering
+          * Description :  Register the Game Over event and pass it to our view for rendering
           */
         app.board.on("GAMEOVER",function(p){
             app.controller.gameOver = true;
@@ -238,40 +238,40 @@ app.controller = {
       * Description : when a move is made we update the board and toggle
       *               to the next player
       */
-      playerMakesMove: function(row,col) {
+    playerMakesMove: function(row,col) {
 
-         var playerToString = (app.controller.player=== 0 ? 'O' : 'X' ) ;
-         var freeSlot;
+       var playerToString = (app.controller.player === 0 ? 'O' : 'X' ) ;
 
-         if ( app.controller._multiPlayer === 'Multi Player') {
-
-             app.view.showPlayer(playerToString);
-             app.board.playerMove( playerToString ,row,col);
-             app.view.renderCell( $playersCell, app.controller.player  === 0 ? 'O' : 'X' );
-
-             this.player = ~this.player;
-             playerToString = (this.player === 0 ? 'O' : 'X' ) ;
-             app.view.showPlayer(playerToString);
+        if ( app.controller._multiPlayer === 'Multi Player') {
+            app.view.showPlayer(playerToString);
+            app.board.playerMove( playerToString ,row,col);
+            app.view.renderCell( $playersCell, app.controller.player  === 0 ? 'O' : 'X' );
+            this.player = ~this.player;
+            playerToString = (this.player === 0 ? 'O' : 'X' ) ;
+            app.view.showPlayer(playerToString);
         }
         else {
-
-             app.view.showPlayer(playerToString);
-             app.board.playerMove( playerToString ,row,col);
-             app.view.renderCell( $playersCell, 'O' );
-
-             //AI's turn
-             app.controller.player = ~app.controller.player;
-             freeSlot = app.board.predictMove( app.board, 0 , true);
-             $i = $('[col="' + freeSlot.col + '"][row="' + freeSlot.row + '"]');
-             app.board.playerMove( 'X' ,freeSlot.row,freeSlot.col);
-             app.view.renderCell( $i, 'X' );
-             app.controller.player = ~app.controller.player;
-             app.view.showPlayer('O');
+            app.view.showPlayer('O');
+            app.board.playerMove( 'O' ,row,col);
+            app.view.renderCell( $playersCell, 'O' );
+            //AI's turn
+            var pred = app.board.predictMove( app.board , 7 , true );
+            if (pred !== undefined) {
+                this.player = ~this.player;
+                $aiResponse = $('[col=' + pred.col + '][row=' + pred.row + ']');
+                app.view.renderCell( $aiResponse, 'X' );
+                app.board.playerMove( 'X' ,pred.row,pred.col)
+                app.view.showPlayer('X');
+                if (app.board.isBoardFilled()) {
+                    app.controller.gameOver = true;
+                    app.view.gameOver();
+                    app.view.showScore(app.scoreBoard);
+                }
+            }
+            this.player = ~this.player;
+            app.view.showPlayer('O');
         }
-
-      }
-
-
+    }
 }
 
 /****************** lets start the app ******/
